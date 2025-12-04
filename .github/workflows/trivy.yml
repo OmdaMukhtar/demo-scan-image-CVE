@@ -32,13 +32,13 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
-            -t docker.io/${{ env.DOCKER_REPOSITORY_OWNER_USERNAME }}/my-app:${{ github.sha }} \
+            -t docker.io/${{ vars.DOCKER_REPOSITORY_OWNER_USERNAME }}/my-app:${{ github.sha }} \
             .
 
       - name: Run Trivy (vulnerability scan) and produce SARIF
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: docker.io/${{ env.DOCKER_REPOSITORY_OWNER_USERNAME }}/my-app:${{ github.sha }}
+          image-ref: docker.io/${{ vars.DOCKER_REPOSITORY_OWNER_USERNAME }}/my-app:${{ github.sha }}
           format: sarif
           output: trivy-report.sarif
           exit-code: '1'
