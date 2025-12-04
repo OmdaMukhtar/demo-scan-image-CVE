@@ -35,19 +35,29 @@ jobs:
             -t docker.io/${{ vars.DOCKER_REPOSITORY_OWNER_USERNAME }}/my-app:${{ github.sha }} \
             .
 
-      - name: Run Trivy (vulnerability scan) and produce SARIF
+      # - name: Run Trivy (vulnerability scan) and produce SARIF
+      #   uses: aquasecurity/trivy-action@0.28.0
+      #   with:
+      #     image-ref: docker.io/${{ vars.DOCKER_REPOSITORY_OWNER_USERNAME }}/my-app:${{ github.sha }}
+      #     format: sarif
+      #     output: trivy-report.sarif
+      #     exit-code: '0'
+      #     ignore-unfixed: true
+      #     vuln-type: 'os,library'
+      #     severity: 'CRITICAL,HIGH'
+
+      # - name: Upload SARIF for GitHub code scanning
+      #   if: always()
+      #   uses: github/codeql-action/upload-sarif@v3
+      #   with:
+      #     sarif_file: trivy-report.sarif
+
+      - name: Run Trivy (vulnerability scan)
         uses: aquasecurity/trivy-action@0.28.0
         with:
           image-ref: docker.io/${{ vars.DOCKER_REPOSITORY_OWNER_USERNAME }}/my-app:${{ github.sha }}
-          format: sarif
-          output: trivy-report.sarif
+          format: table
           exit-code: '1'
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
-
-      - name: Upload SARIF for GitHub code scanning
-        if: always()
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: trivy-report.sarif
