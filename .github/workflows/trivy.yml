@@ -24,6 +24,11 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Debug env variable
+        run: |
+          echo "REPOSITORY_OWNER='$REPOSITORY_OWNER'"
+          env | grep REPOSITORY_OWNER
+
       - name: Build Docker image
         run: |
           docker build \
