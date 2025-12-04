@@ -9,6 +9,7 @@ jobs:
   build-and-scan:
     # runs-on: ubuntu-24.04
     runs-on: self-hosted
+    environment: dev
 
     steps:
       - name: Checkout
