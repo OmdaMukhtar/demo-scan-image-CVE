@@ -1,6 +1,7 @@
 # CI Pipeline – Build & Trivy Security Scan
 This repository contains a GitHub Actions workflow that automatically builds a Docker image and performs a security scan using Trivy before pushing the image to Docker Hub.
 The pipeline ensures that every change to the master branch or a pull request is validated, scanned, and published securely.
+
 ---
 ![architecture](app/assets/ci-trivy.png)
 ## Required Secrets
