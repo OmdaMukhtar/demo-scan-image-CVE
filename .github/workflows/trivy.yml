@@ -2,7 +2,7 @@ name: CI - build & trivy scan
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
 
 jobs:
@@ -39,11 +39,34 @@ jobs:
         uses: aquasecurity/trivy-action@0.28.0
         with:
           image-ref: docker.io/${{ vars.DOCKER_REPOSITORY_OWNER_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}:${{ github.sha }}
-          format: table
+          format: json
           exit-code: '0'
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
+          output: trivy-report.json
+
+      - name: Send Trivy Report to Slack
+        run: |
+          STATUS=$(jq '.Results[].Vulnerabilities | length' trivy-report.json | awk '{s+=$1} END {print s}')
+
+          if [ "$STATUS" -gt 0 ]; then
+            MSG="*Trivy Scan Completed with* $STATUS vulnerabilities"
+          else
+            MSG="*Trivy Scan Passed — No High/Critical vulnerabilities*"
+          fi
+
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{
+              \"text\": \"$MSG\",
+              \"attachments\": [
+                {
+                  \"fallback\": \"Trivy Report\",
+                  \"text\": \"\`\`\`$(jq '.' trivy-report.json)\`\`\`\"
+                }
+              ]
+            }" \
+            ${{ secrets.MATTERMOST_WEBHOOK_URL }}
 
       - name: Push Docker image
         if: success()
